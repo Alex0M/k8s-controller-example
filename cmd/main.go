@@ -91,7 +91,20 @@ func (r *reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		log.Info("deployemnt is up to date")
 		return ctrl.Result{}, nil
 	} else {
-		log.Info("goging to delete")
+		log.Info("goging to delete deployment")
+		configmap.Namespace = req.Namespace
+		if err := r.Delete(ctx, &configmap); err != nil {
+			log.Error(err, "unable to delete configmap")
+			return ctrl.Result{}, err
+		}
+
+		deployment.Namespace = req.Namespace
+		if err := r.Delete(ctx, &deployment); err != nil {
+			log.Error(err, "unable to delete deployment")
+			return ctrl.Result{}, err
+		}
+
+		log.Info("deployment is deleted")
 		return ctrl.Result{}, nil
 	}
 }
