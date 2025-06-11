@@ -75,6 +75,13 @@ func (r *reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 			}
 		}
 
+		if err := r.Get(ctx, req.NamespacedName, &deployment); err != nil {
+			if !apierrors.IsNotFound(err) {
+				log.Error(err, "unable to get deployemnt")
+				return ctrl.Result{}, err
+			}
+		}
+
 		if *deployment.Spec.Replicas != int32(frontendPage.Spec.Replicas) || deployment.Spec.Template.Spec.Containers[0].Image != frontendPage.Spec.Image {
 			deployment.Spec.Replicas = ptr.To[int32](int32(frontendPage.Spec.Replicas))
 			deployment.Spec.Template.Spec.Containers[0].Image = frontendPage.Spec.Image
@@ -91,13 +98,14 @@ func (r *reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		log.Info("deployemnt is up to date")
 		return ctrl.Result{}, nil
 	} else {
-		log.Info("goging to delete deployment")
+		log.Info("goging to delete config map")
 		configmap.Namespace = req.Namespace
 		if err := r.Delete(ctx, &configmap); err != nil {
 			log.Error(err, "unable to delete configmap")
 			return ctrl.Result{}, err
 		}
-
+		log.Info("config map has been deleted")
+		log.Info("goging to delete config map")
 		deployment.Namespace = req.Namespace
 		if err := r.Delete(ctx, &deployment); err != nil {
 			log.Error(err, "unable to delete deployment")
