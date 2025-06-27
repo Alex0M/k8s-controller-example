@@ -1,9 +1,0 @@
-apiVersion: frontendpage.alex0m.io/v1alpha1
-kind: FrontendPage
-metadata:
-  name: testpage
-  namespace: default
-spec:
-  url: "https://k8s-controller.free.beeceptor.com"
-  sync: 30
-

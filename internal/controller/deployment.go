@@ -1,7 +1,7 @@
 package controller
 
 import (
-	frontendv1alpha1 "github.com/Alex0M/k8s-controller-example/api/v1alpha1"
+	frontendpagev1alpha1 "github.com/Alex0M/k8s-controller-example/apis/frontendpage/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -9,11 +9,11 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func buildDeploymentObject(page *frontendv1alpha1.FrontendPage, feData *FrontendPageData) *appsv1.Deployment {
+func buildDeploymentObject(page *frontendpagev1alpha1.FrontendPage) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{Name: page.Name, Namespace: page.Namespace},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: ptr.To(int32(feData.Replicas)),
+			Replicas: ptr.To(int32(page.Spec.Replicas)),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					"app": page.Name,
@@ -29,7 +29,7 @@ func buildDeploymentObject(page *frontendv1alpha1.FrontendPage, feData *Frontend
 					Containers: []corev1.Container{
 						{
 							Name:  "frontend",
-							Image: feData.Image,
+							Image: page.Spec.Image,
 							Ports: []corev1.ContainerPort{
 								{
 									Name:          "http",

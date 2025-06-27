@@ -1,0 +1,8 @@
+apiVersion: alex0m.io/v1alpha1
+kind: FrontendSync
+metadata:
+  name: testpage
+  namespace: default
+spec:
+  url: "http://localhost:3000/api/frontendpage"
+  syncInterval: 30

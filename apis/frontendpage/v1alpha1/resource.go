@@ -6,8 +6,9 @@ import (
 
 // FrontendPageSpec defines the desired state of Frontend
 type FrontendPageSpec struct {
-	Url          string `json:"url"`
-	SyncInterval int    `json:"sync"`
+	Contents string `json:"contents"`
+	Image    string `json:"image"`
+	Replicas int    `json:"replicas"`
 }
 
 // +kubebuilder:object:root=true
@@ -19,7 +20,6 @@ type FrontendPage struct {
 }
 
 // +kubebuilder:object:root=true
-
 // FrontendPageList contains a list of FrontendPage
 type FrontendPageList struct {
 	metav1.TypeMeta `json:",inline"`

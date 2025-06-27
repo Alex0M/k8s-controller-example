@@ -2,12 +2,9 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
 	"reflect"
-	"time"
 
-	frontendv1alpha1 "github.com/Alex0M/k8s-controller-example/api/v1alpha1"
+	frontendpagev1alpha1 "github.com/Alex0M/k8s-controller-example/apis/frontendpage/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -23,17 +20,11 @@ type FrontendPageReconciler struct {
 	scheme *runtime.Scheme
 }
 
-type FrontendPageData struct {
-	Image    string
-	Replicas int
-	Content  string
-}
-
 func (r *FrontendPageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx).WithValues("frontendpage", req.NamespacedName)
 	log.V(1).Info("reconciling FrontendPage")
 
-	var frontendPage frontendv1alpha1.FrontendPage
+	var frontendPage frontendpagev1alpha1.FrontendPage
 
 	if err := r.Get(ctx, req.NamespacedName, &frontendPage); err != nil {
 		if !apierrors.IsNotFound(err) {
@@ -43,21 +34,8 @@ func (r *FrontendPageReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		return ctrl.Result{}, nil
 	}
 
-	log.Info("get data from API")
-
-	resp, err := http.Get(frontendPage.Spec.Url)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	defer resp.Body.Close()
-
-	var feData FrontendPageData
-	if err := json.NewDecoder(resp.Body).Decode(&feData); err != nil {
-		return ctrl.Result{}, err
-	}
-
 	log.Info("reconciling configMap")
-	cm := buildConfigMapObject(&frontendPage, &feData)
+	cm := buildConfigMapObject(&frontendPage)
 	if err := ctrl.SetControllerReference(&frontendPage, cm, r.Scheme()); err != nil {
 		return ctrl.Result{}, err
 	}
@@ -82,7 +60,7 @@ func (r *FrontendPageReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 	//2. Ensure Deployment exists and up to date
 	log.Info("reconciling deployemnt")
-	dp := buildDeploymentObject(&frontendPage, &feData)
+	dp := buildDeploymentObject(&frontendPage)
 	if err := ctrl.SetControllerReference(&frontendPage, dp, r.Scheme()); err != nil {
 		return ctrl.Result{}, err
 	}
@@ -122,12 +100,12 @@ func (r *FrontendPageReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		}
 	}
 
-	return ctrl.Result{RequeueAfter: time.Second * time.Duration(frontendPage.Spec.SyncInterval)}, nil
+	return ctrl.Result{}, nil
 }
 
 func NewFrontPageController(mgr manager.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&frontendv1alpha1.FrontendPage{}).
+		For(&frontendpagev1alpha1.FrontendPage{}).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.ConfigMap{}).
 		Complete(&FrontendPageReconciler{
