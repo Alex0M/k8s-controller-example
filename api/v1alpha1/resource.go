@@ -6,9 +6,8 @@ import (
 
 // FrontendPageSpec defines the desired state of Frontend
 type FrontendPageSpec struct {
-	Contents string `json:"contents"`
-	Image    string `json:"image"`
-	Replicas int    `json:"replicas"`
+	Url          string `json:"url"`
+	SyncInterval int    `json:"sync"`
 }
 
 // +kubebuilder:object:root=true

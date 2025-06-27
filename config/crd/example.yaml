@@ -4,6 +4,6 @@ metadata:
   name: testpage
   namespace: default
 spec:
-  image: nginx:latest
-  contents: this is a test
-  replicas: 1
+  url: "https://k8s-controller.free.beeceptor.com"
+  sync: 30
+

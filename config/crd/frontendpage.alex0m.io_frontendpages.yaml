@@ -38,16 +38,13 @@ spec:
           spec:
             description: FrontendPageSpec defines the desired state of Frontend
             properties:
-              contents:
-                type: string
-              image:
-                type: string
-              replicas:
+              sync:
                 type: integer
+              url:
+                type: string
             required:
-            - contents
-            - image
-            - replicas
+            - sync
+            - url
             type: object
         required:
         - spec
