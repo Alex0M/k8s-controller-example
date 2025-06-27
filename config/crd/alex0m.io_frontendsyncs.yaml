@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.18.0
-  name: frontendpages.frontendpage.alex0m.io
+  name: frontendsyncs.alex0m.io
 spec:
-  group: frontendpage.alex0m.io
+  group: alex0m.io
   names:
-    kind: FrontendPage
-    listKind: FrontendPageList
-    plural: frontendpages
-    singular: frontendpage
+    kind: FrontendSync
+    listKind: FrontendSyncList
+    plural: frontendsyncs
+    singular: frontendsync
   scope: Namespaced
   versions:
   - name: v1alpha1
@@ -38,16 +38,13 @@ spec:
           spec:
             description: FrontendPageSpec defines the desired state of Frontend
             properties:
-              contents:
-                type: string
-              image:
-                type: string
-              replicas:
+              syncInterval:
                 type: integer
+              url:
+                type: string
             required:
-            - contents
-            - image
-            - replicas
+            - syncInterval
+            - url
             type: object
         required:
         - spec

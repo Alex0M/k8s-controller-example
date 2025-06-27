@@ -20,7 +20,6 @@ type FrontendPage struct {
 }
 
 // +kubebuilder:object:root=true
-
 // FrontendPageList contains a list of FrontendPage
 type FrontendPageList struct {
 	metav1.TypeMeta `json:",inline"`
